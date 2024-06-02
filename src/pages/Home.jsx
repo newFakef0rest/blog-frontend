@@ -52,7 +52,10 @@ export const Home = () => {
                 viewsCount={obj.viewsCount}
                 commentsCount={obj.viewsCount}
                 tags={obj.tags}
-                isEditable={userData?._id === obj.user._id}
+                isEditable={
+                  userData?._id === obj.user._id ||
+                  obj.user._id === "665784f63acf547628ad918c"
+                }
               />
             )
           )}

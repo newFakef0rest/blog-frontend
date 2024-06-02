@@ -41,6 +41,8 @@ export const Registration = () => {
 
     if ("token" in data.payload) {
       window.localStorage.setItem("token", data.payload.token);
+    } else {
+      alert(data.payload.response.data[0].msg);
     }
   };
 
@@ -59,7 +61,10 @@ export const Registration = () => {
         <TextField
           error={Boolean(errors.fullName?.message)}
           helperText={errors.fullName?.message}
-          {...register("fullName", { required: "Укажите имя" })}
+          {...register("fullName", {
+            required: "Укажите имя",
+            minLength: { value: 3, message: "Минимум 3 символа" },
+          })}
           className={styles.field}
           label="Полное имя"
           fullWidth
@@ -76,7 +81,10 @@ export const Registration = () => {
         <TextField
           error={Boolean(errors.password?.message)}
           helperText={errors.password?.message}
-          {...register("password", { required: "Укажите пароль" })}
+          {...register("password", {
+            required: "Укажите пароль",
+            minLength: { value: 5, message: "Минимум 5 символов" },
+          })}
           className={styles.field}
           label="Пароль"
           fullWidth

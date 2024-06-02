@@ -12,8 +12,12 @@ export const fetchUserData = createAsyncThunk(
 export const fetchRegister = createAsyncThunk(
   "auth/fetchRegister",
   async (params) => {
-    const { data } = await axios.post("/auth/register", params);
-    return data;
+    try {
+      const { data } = await axios.post("/auth/register", params);
+      return data;
+    } catch (err) {
+      return err;
+    }
   }
 );
 
@@ -67,7 +71,9 @@ const AuthSlice = createSlice({
     },
     [fetchRegister.fulfilled]: (state, action) => {
       state.status = "success";
-      state.data = action.payload;
+      if ("token" in action.payload) {
+        state.data = action.payload;
+      }
     },
     [fetchRegister.rejected]: (state) => {
       state.status = "failed";

@@ -6,10 +6,26 @@ export const fetchPosts = createAsyncThunk("posts/fetchPosts", async () => {
   return data;
 });
 
+export const fetchPopularPosts = createAsyncThunk(
+  "posts/fetchPopularPosts",
+  async () => {
+    const { data } = await axios.get("/posts/popular");
+    return data;
+  }
+);
+
 export const fetchTags = createAsyncThunk("posts/fetchTags", async () => {
   const { data } = await axios.get("/posts/tags");
   return data;
 });
+
+export const fetchPopularTags = createAsyncThunk(
+  "posts/fetchPopularTags",
+  async () => {
+    const { data } = await axios.get("/posts/tags");
+    return data;
+  }
+);
 
 export const fetchRemovePost = createAsyncThunk(
   "posts/fetchRemovePost",
@@ -48,6 +64,19 @@ const postsSlice = createSlice({
       state.posts.status = "failed";
       state.posts.items = [];
     },
+    // Получение популярных статей
+    [fetchPopularPosts.pending]: (state) => {
+      state.posts.status = "loading";
+      state.posts.items = [];
+    },
+    [fetchPopularPosts.fulfilled]: (state, action) => {
+      state.posts.status = "success";
+      state.posts.items = action.payload;
+    },
+    [fetchPopularPosts.rejected]: (state) => {
+      state.posts.status = "failed";
+      state.posts.items = [];
+    },
     // Получение тегов
     [fetchTags.pending]: (state) => {
       state.tags.status = "loading";
@@ -58,6 +87,19 @@ const postsSlice = createSlice({
       state.tags.items = action.payload;
     },
     [fetchTags.rejected]: (state) => {
+      state.tags.status = "failed";
+      state.tags.items = [];
+    },
+    // Получение популярных тегов
+    [fetchPopularTags.pending]: (state) => {
+      state.tags.status = "loading";
+      state.tags.items = [];
+    },
+    [fetchPopularTags.fulfilled]: (state, action) => {
+      state.tags.status = "success";
+      state.tags.items = action.payload;
+    },
+    [fetchPopularTags.rejected]: (state) => {
       state.tags.status = "failed";
       state.tags.items = [];
     },

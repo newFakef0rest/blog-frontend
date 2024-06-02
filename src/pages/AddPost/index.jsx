@@ -19,6 +19,21 @@ export const AddPost = () => {
   const [tags, setTags] = React.useState("");
   const [text, setText] = React.useState("");
   const [imageUrl, setImageUrl] = React.useState("");
+  const [isTitleReady, setIsTitleReady] = React.useState(true);
+  const [isTagsReady, setIsTagsReady] = React.useState(true);
+
+  const handleBlur = ({ onChange, item }) => {
+    if (item.length < 3 && item != tags) {
+      onChange(false);
+    } else if (item.trim().length < 1) {
+      onChange(false);
+    } else {
+      onChange(true);
+    }
+  };
+
+  const isReady =
+    isTitleReady && isTagsReady && text.length > 10 ? true : false;
 
   const isEditing = Boolean(id);
 
@@ -31,9 +46,7 @@ export const AddPost = () => {
       const formData = new FormData();
       const file = event.target.files[0];
       formData.append("image", file);
-      console.log(formData);
       const { data } = await axios.post("/upload", formData);
-      console.log(data);
       setImageUrl(data.url);
     } catch (err) {
       console.error(err);
@@ -41,7 +54,6 @@ export const AddPost = () => {
   };
 
   const onClickRemoveImage = async () => {
-    console.log(imageUrl);
     try {
       await axios.delete("/upload", {
         data: {
@@ -84,7 +96,7 @@ export const AddPost = () => {
       spellChecker: false,
       maxHeight: "400px",
       autofocus: true,
-      placeholder: "Введите текст...",
+      placeholder: "Введите текст...(минимум 10 символов)",
       status: false,
       autosave: {
         enabled: true,
@@ -151,6 +163,13 @@ export const AddPost = () => {
         fullWidth
         value={title}
         onChange={(e) => setTitle(e.target.value)}
+        error={!isTitleReady}
+        onBlur={() => handleBlur({ onChange: setIsTitleReady, item: title })}
+        helperText={
+          isTitleReady === false
+            ? "Заголовок должен содержать минимум 3 символа"
+            : ""
+        }
       />
       <TextField
         classes={{ root: styles.tags }}
@@ -159,6 +178,11 @@ export const AddPost = () => {
         fullWidth
         value={tags}
         onChange={(e) => setTags(e.target.value)}
+        onBlur={() => handleBlur({ onChange: setIsTagsReady, item: tags })}
+        error={!isTagsReady}
+        helperText={
+          isTagsReady === false ? "Тэги должны иметь минимум один символ" : ""
+        }
       />
       <SimpleMDE
         className={styles.editor}
@@ -167,7 +191,12 @@ export const AddPost = () => {
         options={options}
       />
       <div className={styles.buttons}>
-        <Button onClick={onSubmit} size="large" variant="contained">
+        <Button
+          disabled={!isReady}
+          onClick={onSubmit}
+          size="large"
+          variant="contained"
+        >
           {isEditing ? "Изменить" : "Опубликовать"}
         </Button>
         <Link to="/">

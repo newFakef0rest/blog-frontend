@@ -9,12 +9,18 @@ import Grid from "@mui/material/Grid";
 import { Post } from "../components/Post";
 import { TagsBlock } from "../components/TagsBlock";
 import { CommentsBlock } from "../components/CommentsBlock";
-import { fetchPosts, fetchTags } from "../redux/slices/posts";
+import {
+  fetchPosts,
+  fetchTags,
+  fetchPopularPosts,
+  fetchPopularTags,
+} from "../redux/slices/posts";
 
 export const Home = () => {
   const dispatch = useDispatch();
   const userData = useSelector((state) => state.auth.data);
   const { posts, tags } = useSelector((state) => state.posts);
+  const [value, setValue] = React.useState(0);
 
   const isPostsloading = posts.status === "loading";
   const isTagsloading = tags.status === "loading";
@@ -24,16 +30,26 @@ export const Home = () => {
     dispatch(fetchTags());
   }, []);
 
-  console.log(userData?._id === "665c711c3b53e45b1f6f3ed5");
+  const handlePopular = () => {
+    dispatch(fetchPopularPosts());
+    dispatch(fetchPopularTags());
+  };
+
+  const handleDefault = () => {
+    dispatch(fetchPosts());
+    dispatch(fetchTags());
+  };
+
   return (
     <>
       <Tabs
         style={{ marginBottom: 15 }}
-        value={0}
+        value={value}
+        onChange={(_, newValue) => setValue(newValue)}
         aria-label="basic tabs example"
       >
-        <Tab label="Новые" />
-        <Tab label="Популярные" />
+        <Tab onClick={handleDefault} label="Новые" />
+        <Tab onClick={handlePopular} label="Популярные" />
       </Tabs>
       <Grid container spacing={4}>
         <Grid xs={8} item>
@@ -58,7 +74,7 @@ export const Home = () => {
                 tags={obj.tags}
                 isEditable={
                   userData?._id === obj.user._id ||
-                  userData?._id === "665c711c3b53e45b1f6f3ed5"
+                  userData?._id === "665784f63acf547628ad918c"
                 }
               />
             )

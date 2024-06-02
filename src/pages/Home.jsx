@@ -14,42 +14,59 @@ import {
   fetchTags,
   fetchPopularPosts,
   fetchPopularTags,
+  fetchTagPosts,
 } from "../redux/slices/posts";
+import { useParams } from "react-router-dom";
 
 export const Home = () => {
+  const { tagId } = useParams();
   const dispatch = useDispatch();
   const userData = useSelector((state) => state.auth.data);
   const { posts, tags } = useSelector((state) => state.posts);
   const [value, setValue] = React.useState(0);
+  const [tag, setTag] = React.useState("");
 
   const isPostsloading = posts.status === "loading";
   const isTagsloading = tags.status === "loading";
 
   React.useEffect(() => {
-    dispatch(fetchPosts());
     dispatch(fetchTags());
-  }, []);
+    if (tagId) {
+      setTag(tagId);
+
+      dispatch(fetchTagPosts(tagId));
+    } else {
+      dispatch(fetchPosts());
+    }
+  }, [tagId]);
 
   const handlePopular = () => {
     dispatch(fetchPopularPosts());
     dispatch(fetchPopularTags());
+    setTag("");
   };
 
   const handleDefault = () => {
     dispatch(fetchPosts());
     dispatch(fetchTags());
+    setTag("");
+  };
+
+  const handleTag = () => {
+    dispatch(fetchTagPosts(tagId));
   };
 
   return (
     <>
       <Tabs
         style={{ marginBottom: 15 }}
-        value={value}
+        value={tag ? 2 : value}
         onChange={(_, newValue) => setValue(newValue)}
         aria-label="basic tabs example"
       >
         <Tab onClick={handleDefault} label="Новые" />
         <Tab onClick={handlePopular} label="Популярные" />
+        {tagId && <Tab label={tagId} onClick={handleTag} />}
       </Tabs>
       <Grid container spacing={4}>
         <Grid xs={8} item>

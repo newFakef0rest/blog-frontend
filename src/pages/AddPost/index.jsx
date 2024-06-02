@@ -31,6 +31,7 @@ export const AddPost = () => {
       const formData = new FormData();
       const file = event.target.files[0];
       formData.append("image", file);
+      console.log(formData);
       const { data } = await axios.post("/upload", formData);
       console.log(data);
       setImageUrl(data.url);
@@ -39,7 +40,19 @@ export const AddPost = () => {
     }
   };
 
-  const onClickRemoveImage = () => {};
+  const onClickRemoveImage = async () => {
+    console.log(imageUrl);
+    try {
+      await axios.delete("/upload", {
+        data: {
+          url: imageUrl,
+        },
+      });
+      setImageUrl("");
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   const onChange = React.useCallback((value) => {
     setText(value);
@@ -122,7 +135,9 @@ export const AddPost = () => {
           </Button>
           <img
             className={styles.image}
-            src={`${process.env.REACT_APP_API_URL}${imageUrl}`}
+            src={`${
+              process.env.REACT_APP_API_URL || "http://localhost:5000"
+            }${imageUrl}`}
             alt="Uploaded"
           />
         </>

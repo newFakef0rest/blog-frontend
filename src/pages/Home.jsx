@@ -23,6 +23,8 @@ export const Home = () => {
     dispatch(fetchPosts());
     dispatch(fetchTags());
   }, []);
+
+  console.log(userData?._id === "665c711c3b53e45b1f6f3ed5");
   return (
     <>
       <Tabs
@@ -44,7 +46,9 @@ export const Home = () => {
                 title={obj.title}
                 imageUrl={
                   obj.imageUrl
-                    ? `${process.env.REACT_APP_API_URL}${obj.imageUrl}`
+                    ? `${
+                        process.env.REACT_APP_API_URL || "http://localhost:5000"
+                      }${obj.imageUrl}`
                     : null
                 }
                 user={obj.user}
@@ -54,7 +58,7 @@ export const Home = () => {
                 tags={obj.tags}
                 isEditable={
                   userData?._id === obj.user._id ||
-                  obj.user._id === "665784f63acf547628ad918c"
+                  userData?._id === "665c711c3b53e45b1f6f3ed5"
                 }
               />
             )
